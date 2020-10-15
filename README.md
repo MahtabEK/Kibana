@@ -165,7 +165,7 @@ We can see that the date is formatted as Weekday (text), Month (text), Hour, Min
 
 Here, the "format" string must be written so that it describes the date format we actually have in our data. More information on mappings can be found here: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html and detailed information on date formats can be found here: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html and here: http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html. Hint: Date formats are tricky; for example, note that "M" and "MMM" have different meanings; note also that there are several options for timezone offsets; the one you want is "Z".
 
-1) Take the associated mapcommand.txt file and modify it so that the created_at field is correctly interpreted as a date. 
+**1) Take the associated mapcommand.txt file and modify it so that the created_at field is correctly interpreted as a date.** 
 
 **You can find the modified version called "modified-mapcommand.txt"**
 
@@ -210,3 +210,53 @@ in the Kibana console.
 Kibana needs to know which indices it should look at for queries; it does so by defining "index patterns" which match all indexes of interest for a particular task. Since we only have one index, this is trivial; create an index pattern called tweets* and choose created_at for the Time Filter. If you click the "Discover" icon (compass on left) and ensure that your time range is set from 16 April 2017 00:00 to 25 April 2017 00:00. Having done so, you should see a bar chart of when the tweets occurred, and see a list of tweets arranged by date.
 
 If you need to edit or remove your index pattern, you can do so by clicking the gear in the menu on the left (again you may need to scroll down).
+
+**2) You can find a screenshot of bar graph shown in the "Discover" window, with filename "discover.jpg"**
+
+**Exploring and Visualizing the Data**
+
+The questions below will use the "Visualize" component of Kibana, accessible from the menu on the left hand side of the screen. Note that any time you modify your settings, you will need to click the "Apply changes" button (right-pointing triangle) to get Kibana to re-generate the graph. You may wish to refer to these materials: https://www.elastic.co/guide/en/kibana/current/visualize.html
+
+You can save your visualizations in your instance of Kibana.
+
+For the questions below, you can find the answers in a file called "answers.pdf". Answer the questions in complete sentences. For Question 5.2, you can check out the csv file called "Q5.1,csv".
+
+**3) Create a vertical bar chart of number of tweets with in_reply_to_screen_name.keyword on the X-axis. Show the top 100 most common screen names.**
+
+  - 3.1) Save the visualization in your instance of Kibana with the name "Q3.1".
+  
+    You can find it in this project folder as well: "Q31.png"
+  
+  - 3.2) How could peaks of in_reply_to_user_id be helpful to a company examining a dataset of tweets?
+  
+**4) Split the series produced in Question 3 by place.country.keyword using the Sub Aggregation. Aggregate into the top 5 terms, plus an "other" category.**
+
+  - 4.1) Save the visualization in your instance of Kibana with the name Q4.1 and upload a screenshot as Q41.png
+  
+  - 4.3) Speculate on the source of the less-common entries. How could entries like this disrupt an optimized workflow? (Thinking question)
+  
+  - 4.4) Are there any missing values for the place.country.keyword field among these users?
+  
+  - 4.5) How many tweets to the most-replied screen name came from "Canada"?
+  
+**5) Create a bar graph of the number of tweets per hour. Use a one-hour interval.**
+
+  - 5.1) Save the visualization in your instance of Kibana with the name "Q5.1".
+  
+   You can find it in this project folder as well: "Q51.png"
+
+  - 5.2) At the bottom of the page, click the button to pull up a table of the results. Export this as a formatted result.
+  
+   You can find it in this project folder as well: "Q5.1.csv"
+  
+  - 5.3) Adapt your bar graph to show the number of tweets per hour of the top 5 reply recipients, as defined in Question 3. 
+  
+   You can find it in this project folder as well: "Q5.3.PNG"
+   
+** 6) Any Interesting Visualization**
+
+  - X) Create any visualization of the twitter data, and explain why it is interesting.
+  
+Save the visualization in your instance of Kibana with the name "Interesting Visualization"
+
+You can find it in this project folder as well: "Interesting Visualization.png". The explanation can be found in "Interesting Visualization.pdf".
