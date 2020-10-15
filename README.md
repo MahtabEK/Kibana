@@ -253,7 +253,7 @@ For the questions below, you can find the answers in a file called "Answers.pdf"
   
    You can find it in this project folder as well: "Q5.3.PNG"
    
-** 6) Any Interesting Visualization**
+**6) Any Interesting Visualization**
 
   - X) Create any visualization of the twitter data, and explain why it is interesting.
   
