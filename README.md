@@ -101,3 +101,112 @@ sudo service elasticsearch start
 sudo service kibana start
 ****
 
+As mentioned above, you can test your connection by pointing your browser to http://localhost:5601/ and you can try some commands by clicking the "Dev tools" (wrench) icon on the left of the screen (you may need to scroll the menu down). This brings up the Kibana console. You may need to wait a bit for Kibana to get ready for you.
+
+If you get into trouble, you may want to try rebooting your VM with
+
+****
+sudo reboot
+****
+
+and restarting the services.
+
+**Getting tweets into Kibana**
+
+If you bring up the Kibana console (click the wrench in the menu on the left) and run the following command:
+
+****
+GET _cat/indices?v
+****
+
+You should see something like
+
+****
+health status index                  uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   .kibana_task_manager_1 1q4SJze_RuKgFzyATwkayw   1   0          2            0     34.2kb         34.2kb
+green  open   .kibana_1              8Uz_g8dtTZauIwX9sOF21g   1   0          6            1     36.9kb         36.9kb
+****
+
+which indicates that Kibana is running, but no user data has been indexed yet.
+
+For this project, it was supposed to use the same collection of tweets for the Kibana/elasticsearch exercises as for the mongodb exercises. Unfortunately, there are incompatibilities in terms of how the two tools format their tweets. We will use the jq command to re-format the tweets so that elasticsearch can consume them. Copy the following (very long) command into your SSH window and run it. This should generate a file called tweets.elastic.json which we will feed into elastic search. Creating the file will take 3 or 4 minutes.
+
+****
+./jq -c '# Apply f to composite entities recursively, and to atoms
+def walk(f):
+  . as $in
+  | if type == "object" then
+    reduce keys_unsorted[] as $key
+      ( {}; . + { ($key):  ($in[$key] | walk(f)) } ) | f
+  elif type == "array" then map( walk(f) ) | f
+  else f
+  end;
+  { index: {_index: "tweets"} },del(._id)|walk(if (type == "object" and has("$numberLong")) then .["$numberLong"] else . end)' tweets.json > tweets.elastic.json
+****
+
+**Upload and index the tweets**
+
+We are nearly ready to upload the tweets. Before we do, we need to provide elasticsearch with a "mapping" that tells how each field in a json object that represents a tweet is to be interpreted. This is called the "type" of the field. Elasticsearch will guess what type should be, but it is not very smart. In particular, it is not good at identifying dates. In this section, you will take the default mapping, which we provide, and modify it so that dates are correctly interpreted by Elasticsearch.
+
+Consider the created_at field. Here is an example.
+
+****
+Mon Apr 17 02:49:03 +0000 2017
+****
+
+We can see that the date is formatted as Weekday (text), Month (text), Hour, Minute, Second (in 24-hour time), TimeZone, and Year. A date type in Elasticsearch within a mapping looks like the following:
+
+****
+{
+      "type":   "date",
+      "format": "yyyy-MM-dd"
+}
+****
+
+Here, the "format" string must be written so that it describes the date format we actually have in our data. More information on mappings can be found here: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html and detailed information on date formats can be found here: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html and here: http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html. Hint: Date formats are tricky; for example, note that "M" and "MMM" have different meanings; note also that there are several options for timezone offsets; the one you want is "Z".
+
+1) Take the associated mapcommand.txt file and modify it so that the created_at field is correctly interpreted as a date. 
+
+**You can find the modified version called "modified-mapcommand.txt"**
+
+The file is set up such that if you copy and paste the whole thing into the Kibana console, it will create a new index called tweets with the given mapping.
+
+After creating the index with the mapping, to populate the index with tweets, run the following command:
+
+****
+curl -H "Content-Type: application/x-ndjson" -XPOST localhost:9200/tweets/_bulk --data-binary @tweets.elastic.json | ./jq '.' > upload_output.json
+****
+
+This will take about 3 minutes. If things have worked, and you bring up the Kibana console and run the following command:
+
+****
+GET _cat/indices?v
+****
+
+You should see something like
+
+****
+health status index   uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   tweets  hYLTgFO-QPiwTxoBKexC2Q   5   1     106508            0    361.5mb        361.5mb
+green  open   .kibana nDzjp2JaTYqA3w-VuW4PIg   1   0          2            1     89.1kb         89.1kb
+****
+
+If not, you can check the status of the uploads by running this command in your SSH window:
+
+****
+nano upload_output.json
+****
+
+If something goes wrong, you can start again from scratch by running
+
+****
+DELETE tweets
+****
+
+in the Kibana console.
+
+**Creating an index pattern**
+
+Kibana needs to know which indices it should look at for queries; it does so by defining "index patterns" which match all indexes of interest for a particular task. Since we only have one index, this is trivial; create an index pattern called tweets* and choose created_at for the Time Filter. If you click the "Discover" icon (compass on left) and ensure that your time range is set from 16 April 2017 00:00 to 25 April 2017 00:00. Having done so, you should see a bar chart of when the tweets occurred, and see a list of tweets arranged by date.
+
+If you need to edit or remove your index pattern, you can do so by clicking the gear in the menu on the left (again you may need to scroll down).
