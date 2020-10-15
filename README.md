@@ -38,3 +38,23 @@ wget -O jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 
 chmod +x jq
 ****
+
+**JVM Options**
+
+Because we are using a fairly large example database (0.5gb), we need to adjust a few default options. Edit the JVM options file using the following command:
+
+****
+sudo nano /etc/elasticsearch/jvm.options
+****
+
+Edit the file so that the lines
+
+****
+# Xms represents the initial size of total heap space
+
+# Xmx represents the maximum size of total heap space
+
+-Xms1g
+
+-Xmx1g
+****
