@@ -219,7 +219,7 @@ The questions below will use the "Visualize" component of Kibana, accessible fro
 
 You can save your visualizations in your instance of Kibana.
 
-For the questions below, you can find the answers in a file called "answers.pdf". Answer the questions in complete sentences. For Question 5.2, you can check out the csv file called "Q5.1,csv".
+For the questions below, you can find the answers in a file called "Answers.pdf". Answer the questions in complete sentences. For Question 5.2, you can check out the csv file called "Q5.1,csv".
 
 **3) Create a vertical bar chart of number of tweets with in_reply_to_screen_name.keyword on the X-axis. Show the top 100 most common screen names.**
 
