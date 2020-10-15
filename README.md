@@ -50,11 +50,54 @@ sudo nano /etc/elasticsearch/jvm.options
 Edit the file so that the lines
 
 ****
-# Xms represents the initial size of total heap space
+#Xms represents the initial size of total heap space
 
-# Xmx represents the maximum size of total heap space
+#Xmx represents the maximum size of total heap space
 
 -Xms1g
 
 -Xmx1g
 ****
+
+now read
+
+****
+#Xms represents the initial size of total heap space
+
+#Xmx represents the maximum size of total heap space
+
+-Xms4g
+
+-Xmx4g
+****
+
+Make sure you edit the correct lines. Save with ctrl-o, exit with ctrl-x. This ensures that elasticsearch is allowed to use enough memory (4 gigabytes) to process all the tweets.
+
+**Elastic Search Options**
+
+Edit the elastic search options file using the following command:
+
+****
+sudo nano /etc/elasticsearch/elasticsearch.yml
+****
+
+Add the following lines to the top of the file
+
+****
+http.max_content_length: 1000mb
+
+bootstrap.system_call_filter: false
+****
+
+Save with ctrl-o, exit with ctrl-x. This ensures that we can upload the entire file of tweets at once (about 500mb worth).
+
+**Starting ElasticSearch and Kibana**
+
+Having set these options, we can now start elasticsearch and kibana. Once started, you should never have to stop them, and they will remain running even if you disconnect from your VM.
+
+****
+sudo service elasticsearch start
+
+sudo service kibana start
+****
+
